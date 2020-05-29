@@ -1,5 +1,4 @@
 import numpy as np
-
 from sklearn.datasets import load_iris
 import random
 
@@ -21,10 +20,12 @@ class NeuralNetwork:
         self.X = X
         self.Y = Y
 
-        self.regularization = 0.001
-        self.learning_rate = 0.01
+        self.regularization = 0.01
+        self.learning_rate = 0.0001
 
         self.max_iters = 1000
+
+        self.initialise_nodes()
 
     def sigmoid_activation(self, np_array):
         """Apply sigmoid activation on the given layer."""
@@ -38,6 +39,7 @@ class NeuralNetwork:
         """Calcules the hypothesis via feed forward propagation."""
 
         # Insert the X_input into X
+
         self.nodes[0][1:, :] = X_inp
 
         for i in range(len(self.theta)):
@@ -57,7 +59,7 @@ class NeuralNetwork:
         last_error = hypothesis - Y_test.reshape((-1, 1))
 
         # Create a list of the errors.
-        errors = [np.zeros((self.nodes[i].shape)) for i in range(1, len(self.nodes) - 1)]
+        errors = [np.zeros(self.nodes[i].shape) for i in range(1, len(self.nodes) - 1)]
         errors.append(last_error)
 
         # Now we need to actually perform the backwards propagation.
@@ -106,16 +108,7 @@ class NeuralNetwork:
 
         return predictions
 
-    def train_neural_network(self, X, Y):
-        """Trains the neural network model.
-        Layers passed in contains two keys,
-        number of layers and array containing
-        the size of each layer."""
-
-        # Now we need to instantiate the layers.
-        # We need to use random initialization this time.
-        # Zero initialization will not work.
-
+    def initialise_nodes(self):
         # We're going to find epsilon for random initialisation
         epsilon = 0.5
 
@@ -138,6 +131,16 @@ class NeuralNetwork:
                 # Do not want to insert a 1 in the last layer
             else:
                 self.nodes[i + 1] = self.nodes[i + 1].reshape((-1, 1))
+
+    def train_neural_network(self, X, Y):
+        """Trains the neural network model.
+        Layers passed in contains two keys,
+        number of layers and array containing
+        the size of each layer."""
+
+        # Now we need to instantiate the layers.
+        # We need to use random initialization this time.
+        # Zero initialization will not work.
 
         # We need an accumulator.
         accumulator = [np.zeros((self.theta[i].shape[0], self.theta[i].shape[1])) \
@@ -167,6 +170,19 @@ class NeuralNetwork:
                 print("Converged!")
                 break
 
+    def get_theta(self):
+        return self.theta
+
+    def save_theta(self):
+        for i in range(len(self.theta)):
+            np.savetxt('theta' + str(i) + '.csv', self.theta[i], delimiter=',')
+
+    def load_theta(self, *files):
+        self.theta.clear()
+        for file in files:
+            theta = np.loadtxt(file, delimiter=',')
+            self.theta.append(theta)
+
 
 """
 X = []
@@ -180,7 +196,6 @@ for i in range(1000):
         X.append([2])
         Y.append([1])
 
-
 X = np.array(X, dtype='float')
 Y = np.array(Y, dtype='float')
 
@@ -191,8 +206,6 @@ nn.train_neural_network(X, Y)
 example = np.array([[1]])
 
 print(np.where(nn.predict(np.array([2])) > 0.5, 1, 0))
-
-"""
 
 iris = load_iris()
 print(iris.data.shape)
@@ -217,7 +230,7 @@ print(Y_iris)
 
 for i in range(X.shape[0]):
     # Make a prediction.
-    predictions = nn.predict(X[i].reshape((-1,1)))
+    predictions = nn.predict(X[i].reshape((-1, 1)))
     maximum = np.argmax(predictions)
 
     print(maximum)
@@ -227,5 +240,5 @@ for i in range(X.shape[0]):
 
 print("Accuracy: ", correct / X.shape[0])
 
-
-
+nn.save_theta()
+"""

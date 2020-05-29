@@ -1,7 +1,8 @@
 from mnist import MNIST
 import numpy as np
 import random
-import NeuralNet as nn
+import NeuralNet
+from sklearn.model_selection import train_test_split
 
 mndata = MNIST('samples')
 
@@ -22,24 +23,22 @@ for i in range(np_testing_Y.shape[0]):
     index = image_label[i]
     np_testing_Y[i, index] = 1
 
-print(np_testing_Y)
-print(np_testing_Y[0, :])
 
-nn = nn.NeuralNetwork(np_testing_X[:5000, :], np_testing_Y[:5000, :], np_testing_X.shape[1], 32, 32, np_testing_Y.shape[1])
+nn = NeuralNet.NeuralNetwork(np_testing_X, np_testing_Y, np_testing_X.shape[1], 800, np_testing_Y.shape[1])
 
-neural_network = nn.train_neural_network(np_testing_X[:5000], np_testing_Y[:5000, :])
+# nn.train_neural_network(X_test, y_test)
 
-random_index = random.randrange(0, 5000)
+# Just gonna save the theta in a file.
+# nn.save_theta()
 
-print(mndata.display(images[random_index]))
-
-test = np.array(images[random_index]).reshape(((-1,1)))
-
-print(labels[random_index])
-
-answer = nn.predict(test)
-
-for num in answer:
-    print(num)
+nn.load_theta("theta0.csv", "theta1.csv")
 
 
+# Pick a random index.
+
+index = random.randrange(0, len(np_testing_X))
+
+print(mndata.display(np_testing_X[index]))
+
+# Make a prediction
+print("Prediction:", nn.predict(np_testing_X[index].reshape((-1,1))))

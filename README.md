@@ -6,4 +6,6 @@ During this project I created my own neural network from scratch in the Python p
 
 By the end of the project I trained my neural network to recognise digits in a picture. 
 
+![training the neural network to learn digits](https://github.com/tim-beatham/NeuralNet/blob/master/image.png)
+
 
